@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 8</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 8</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (211-240) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è la glicemia?",
+                options: ["La pressione del sangue nelle arterie", "Il livello di glucosio nel sangue", "La temperatura corporea"],
+                correct: "Il livello di glucosio nel sangue",
+                explanation: "La glicemia è il livello di glucosio nel sangue, generalmente tra 70 e 100 mg/dL a digiuno. Non misura la pressione arteriosa né la temperatura corporea. Gli OSS devono misurare la glicemia con glucometri, specialmente nei pazienti diabetici, e segnalare valori anomali, come iperglicemia (>126 mg/dL) o ipoglicemia (<70 mg/dL)."
+            },
+            {
+                question: "Quali sono i valori normali della glicemia a digiuno?",
+                options: ["50-70 mg/dL", "70-100 mg/dL", "120-150 mg/dL"],
+                correct: "70-100 mg/dL",
+                explanation: "I valori normali della glicemia a digiuno in un adulto sano sono tra 70 e 100 mg/dL, secondo l’American Diabetes Association. Valori inferiori indicano ipoglicemia, superiori iperglicemia. Gli OSS devono monitorare la glicemia nei pazienti diabetici, garantendo misurazioni accurate e segnalando deviazioni."
+            },
+            {
+                question: "Cos’è l’iperglicemia?",
+                options: ["Un livello di glucosio inferiore a 70 mg/dL", "Un livello di glucosio superiore a 126 mg/dL", "Un livello di glucosio irregolare"],
+                correct: "Un livello di glucosio superiore a 126 mg/dL",
+                explanation: "L’iperglicemia è un livello di glucosio nel sangue superiore a 126 mg/dL a digiuno, spesso associata al diabete mellito. Non è un livello inferiore a 70 mg/dL (ipoglicemia) né irregolare. Gli OSS devono riconoscere i sintomi (es. poliuria, sete) e segnalarli, garantendo idratazione e aderenza alla terapia."
+            },
+            {
+                question: "Cos’è l’ipoglicemia?",
+                options: ["Un livello di glucosio superiore a 126 mg/dL", "Un livello di glucosio inferiore a 70 mg/dL", "Un livello di glucosio irregolare"],
+                correct: "Un livello di glucosio inferiore a 70 mg/dL",
+                explanation: "L’ipoglicemia è un livello di glucosio nel sangue inferiore a 70 mg/dL, che può causare tremori, sudorazione e confusione. Non è un livello superiore a 126 mg/dL (iperglicemia) né irregolare. Gli OSS devono agire rapidamente somministrando zuccheri semplici (es. succo di frutta) sotto supervisione medica e segnalare l’episodio."
+            },
+            {
+                question: "Quale strumento si usa per misurare la glicemia?",
+                options: ["Pulsossimetro", "Glucometro", "Sfigmomanometro"],
+                correct: "Glucometro",
+                explanation: "Il glucometro è uno strumento portatile che misura la glicemia tramite una goccia di sangue, solitamente prelevata dal dito. Il pulsossimetro misura la saturazione, e lo sfigmomanometro la pressione. Gli OSS devono utilizzare il glucometro correttamente, seguendo le istruzioni, e segnalare valori anomali."
+            },
+            {
+                question: "Cos’è il peso corporeo?",
+                options: ["La pressione del sangue nelle arterie", "La massa corporea misurata in kg", "Il livello di glucosio nel sangue"],
+                correct: "La massa corporea misurata in kg",
+                explanation: "Il peso corporeo è la massa corporea di una persona, misurata in chilogrammi con una bilancia. Non misura la pressione arteriosa né la glicemia. Gli OSS devono pesare i pazienti regolarmente, soprattutto in caso di edema o malnutrizione, e segnalare variazioni significative."
+            },
+            {
+                question: "Quale strumento si usa per misurare il peso corporeo?",
+                options: ["Bilancia", "Glucometro", "Termometro"],
+                correct: "Bilancia",
+                explanation: "La bilancia è lo strumento usato per misurare il peso corporeo in kg. Il glucometro misura la glicemia, e il termometro la temperatura. Gli OSS devono utilizzare una bilancia calibrata, garantendo che il paziente sia stabile, e registrare i dati con precisione."
+            },
+            {
+                question: "Cos’è l’indice di massa corporea (IMC)?",
+                options: ["Il livello di glucosio nel sangue", "Un indicatore di peso in relazione all’altezza", "La pressione arteriosa"],
+                correct: "Un indicatore di peso in relazione all’altezza",
+                explanation: "L’IMC è un indicatore calcolato dividendo il peso (kg) per il quadrato dell’altezza (m²), usato per valutare se una persona è sottopeso, normopeso, sovrappeso o obesa. Non misura la glicemia né la pressione. Gli OSS devono conoscere l’IMC per monitorare lo stato nutrizionale dei pazienti e segnalare anomalie."
+            },
+            {
+                question: "Quali sono i valori normali dell’IMC?",
+                options: ["15-18.5", "18.5-24.9", "25-30"],
+                correct: "18.5-24.9",
+                explanation: "Un IMC tra 18.5 e 24.9 è considerato normale, secondo l’OMS. Valori inferiori a 18.5 indicano sottopeso, tra 25 e 29.9 sovrappeso, e oltre 30 obesità. Gli OSS devono calcolare l’IMC per valutare lo stato nutrizionale e supportare interventi dietetici o terapeutici."
+            },
+            {
+                question: "Cos’è la malnutrizione?",
+                options: ["Un eccesso di peso corporeo", "Una carenza o squilibrio di nutrienti", "Un aumento della glicemia"],
+                correct: "Una carenza o squilibrio di nutrienti",
+                explanation: "La malnutrizione è una condizione di carenza, eccesso o squilibrio di nutrienti, che può portare a sottopeso, obesità o carenze vitaminiche. Non è solo un eccesso di peso né un aumento della glicemia. Gli OSS devono monitorare lo stato nutrizionale dei pazienti, osservando segni come perdita di peso o debolezza."
+            },
+            {
+                question: "Cos’è la disidratazione?",
+                options: ["Un accumulo di liquido nei tessuti", "Una perdita eccessiva di acqua corporea", "Un aumento della temperatura corporea"],
+                correct: "Una perdita eccessiva di acqua corporea",
+                explanation: "La disidratazione è una perdita eccessiva di acqua corporea, spesso causata da diarrea, vomito, febbre o scarsa assunzione di liquidi. Non è un accumulo di liquido (edema) né un aumento della temperatura. Gli OSS devono riconoscere i segni di disidratazione (es. sete, pelle secca) e garantire idratazione."
+            },
+            {
+                question: "Quale è un segno tipico della disidratazione?",
+                options: ["Edema", "Secchezza delle mucose", "Ipertensione"],
+                correct: "Secchezza delle mucose",
+                explanation: "La secchezza delle mucose (es. bocca asciutta) è un segno tipico della disidratazione, dovuta alla perdita di liquidi. L’edema indica accumulo di liquido, e l’ipertensione non è direttamente correlata. Gli OSS devono monitorare i segni di disidratazione e somministrare liquidi sotto supervisione medica."
+            },
+            {
+                question: "Cos’è la diuresi?",
+                options: ["La produzione di sudore", "La produzione di urina", "La frequenza respiratoria"],
+                correct: "La produzione di urina",
+                explanation: "La diuresi è la produzione ed escrezione di urina da parte dei reni, generalmente 1-2 litri al giorno in un adulto sano. Non è la produzione di sudore né la frequenza respiratoria. Gli OSS devono misurare la diuresi nei pazienti, specialmente in quelli con catetere, e segnalare oliguria o poliuria."
+            },
+            {
+                question: "Quale è il volume normale della diuresi giornaliera in un adulto?",
+                options: ["0.5-1 litro", "1-2 litri", "3-4 litri"],
+                correct: "1-2 litri",
+                explanation: "Il volume normale della diuresi giornaliera in un adulto sano è di 1-2 litri, a seconda dell’assunzione di liquidi e delle condizioni cliniche. Valori inferiori (oliguria) o superiori (poliuria) possono indicare problemi renali o sistemici. Gli OSS devono monitorare la diuresi e segnalare anomalie."
+            },
+            {
+                question: "Cos’è l’oliguria?",
+                options: ["Una produzione di urina superiore a 2 litri al giorno", "Una produzione di urina inferiore a 400 mL al giorno", "Una produzione di urina irregolare"],
+                correct: "Una produzione di urina inferiore a 400 mL al giorno",
+                explanation: "L’oliguria è una produzione di urina inferiore a 400 mL al giorno, spesso causata da disidratazione, insufficienza renale o ostruzioni. Non è una produzione superiore a 2 litri (poliuria) né irregolare. Gli OSS devono misurare la diuresi e segnalare l’oliguria, monitorando i segni di disfunzione renale."
+            },
+            {
+                question: "Cos’è la poliuria?",
+                options: ["Una produzione di urina inferiore a 400 mL al giorno", "Una produzione di urina superiore a 2.5 litri al giorno", "Una produzione di urina irregolare"],
+                correct: "Una produzione di urina superiore a 2.5 litri al giorno",
+                explanation: "La poliuria è una produzione di urina superiore a 2.5 litri al giorno, spesso associata a diabete mellito, diabete insipido o assunzione eccessiva di liquidi. Non è una produzione inferiore a 400 mL (oliguria) né irregolare. Gli OSS devono monitorare la poliuria e segnalarla, garantendo idratazione."
+            },
+            {
+                question: "Cos’è l’anuria?",
+                options: ["Una produzione di urina superiore a 2.5 litri al giorno", "Un’assenza quasi totale di urina", "Una produzione di urina irregolare"],
+                correct: "Un’assenza quasi totale di urina",
+                explanation: "L’anuria è un’assenza quasi totale di urina (<50 mL al giorno), spesso causata da insufficienza renale grave o ostruzioni urinarie. Non è una produzione elevata (poliuria) né irregolare. Gli OSS devono segnalare immediatamente l’anuria, monitorando i segni di insufficienza renale."
+            },
+            {
+                question: "Cos’è la ritenzione urinaria?",
+                options: ["Un’eccessiva produzione di urina", "Un’incapacità di svuotare completamente la vescica", "Un’infiammazione dei reni"],
+                correct: "Un’incapacità di svuotare completamente la vescica",
+                explanation: "La ritenzione urinaria è l’incapacità di svuotare completamente la vescica, spesso dovuta a ostruzioni, problemi neurologici o farmaci. Non è un’eccessiva produzione di urina né un’infiammazione renale. Gli OSS devono monitorare i pazienti, segnalare difficoltà urinarie e collaborare per l’inserimento di un catetere, se necessario."
+            },
+            {
+                question: "Cos’è l’incontinenza urinaria?",
+                options: ["Un’incapacità di svuotare la vescica", "Una perdita involontaria di urina", "Un’eccessiva produzione di urina"],
+                correct: "Una perdita involontaria di urina",
+                explanation: "L’incontinenza urinaria è una perdita involontaria di urina, che può essere causata da debolezza dei muscoli pelvici, problemi neurologici o infezioni. Non è un’incapacità di svuotare la vescica (ritenzione) né un’eccessiva produzione (poliuria). Gli OSS devono fornire assistenza igienica, utilizzare ausili assorbenti e segnalare il problema."
+            },
+            {
+                question: "Cos’è un catetere vescicale?",
+                options: ["Un dispositivo per misurare la glicemia", "Un tubo inserito nella vescica per drenare l’urina", "Uno strumento per misurare la pressione"],
+                correct: "Un tubo inserito nella vescica per drenare l’urina",
+                explanation: "Un catetere vescicale è un tubo sterile inserito nella vescica attraverso l’uretra per drenare l’urina, usato in caso di ritenzione o incontinenza. Non misura la glicemia né la pressione. Gli OSS devono monitorare il catetere per infezioni, garantire l’igiene e segnalare ostruzioni o perdite."
+            },
+            {
+                question: "Quale è la funzione principale del catetere vescicale?",
+                options: ["Misurare la pressione arteriosa", "Drenare l’urina dalla vescica", "Somministrare farmaci"],
+                correct: "Drenare l’urina dalla vescica",
+                explanation: "La funzione principale del catetere vescicale è drenare l’urina dalla vescica in pazienti con ritenzione, incontinenza o necessità di monitoraggio della diuresi. Non misura la pressione né somministra farmaci. Gli OSS devono gestire il catetere con tecniche asettiche, controllando il flusso urinario e segnalando anomalie."
+            },
+            {
+                question: "Cos’è una stomia?",
+                options: ["Un’infiammazione della vescica", "Un’apertura artificiale per l’eliminazione di feci o urina", "Un dispositivo per misurare la glicemia"],
+                correct: "Un’apertura artificiale per l’eliminazione di feci o urina",
+                explanation: "Una stomia è un’apertura chirurgica artificiale che permette l’eliminazione di feci (colostomia, ileostomia) o urina (urostomia) in un sacchetto esterno, usata in caso di patologie intestinali o urinarie. Non è un’infiammazione né un dispositivo di misurazione. Gli OSS devono gestire la stomia, garantendo igiene e cambiando i sacchetti."
+            },
+            {
+                question: "Quale è la funzione principale di una colostomia?",
+                options: ["Drenare l’urina", "Eliminare le feci attraverso un’apertura artificiale", "Misurare la pressione arteriosa"],
+                correct: "Eliminare le feci attraverso un’apertura artificiale",
+                explanation: "Una colostomia è un’apertura chirurgica nel colon che permette l’eliminazione delle feci in un sacchetto esterno, usata in caso di tumori, ostruzioni o malattie infiammatorie. Non drena l’urina né misura la pressione. Gli OSS devono cambiare i sacchetti, monitorare la cute peristomale e segnalare irritazioni."
+            },
+            {
+                question: "Cos’è una ileostomia?",
+                options: ["Un’apertura nel colon per eliminare le feci", "Un’apertura nell’ileo per eliminare le feci", "Un dispositivo per drenare l’urina"],
+                correct: "Un’apertura nell’ileo per eliminare le feci",
+                explanation: "Una ileostomia è un’apertura chirurgica nell’ileo (intestino tenue) che permette l’eliminazione delle feci in un sacchetto, usata in caso di colite ulcerosa o morbo di Crohn. Non è nel colon (colostomia) né drena l’urina. Gli OSS devono gestire l’ileostomia, garantendo igiene e osservando segni di ostruzione."
+            },
+            {
+                question: "Cos’è una urostomia?",
+                options: ["Un’apertura per eliminare le feci", "Un’apertura per drenare l’urina", "Un dispositivo per misurare la glicemia"],
+                correct: "Un’apertura per drenare l’urina",
+                explanation: "Una urostomia è un’apertura chirurgica che permette il drenaggio dell’urina in un sacchetto esterno, usata in caso di tumori vescicali o ostruzioni urinarie. Non elimina le feci né misura la glicemia. Gli OSS devono gestire l’urostomia, monitorando il flusso urinario e cambiando i sacchetti con tecniche asettiche."
+            },
+            {
+                question: "Quale è la complicanza più comune di una stomia?",
+                options: ["Ipertensione", "Irritazione della cute peristomale", "Iperglicemia"],
+                correct: "Irritazione della cute peristomale",
+                explanation: "L’irritazione della cute peristomale è la complicanza più comune delle stomie, dovuta a perdite di feci/urina o materiali adesivi. Non è l’ipertensione né l’iperglicemia. Gli OSS devono controllare la cute, applicare barriere protettive e segnalare arrossamenti o ulcerazioni."
+            },
+            {
+                question: "Cos’è la stipsi?",
+                options: ["Una perdita involontaria di urina", "Una difficoltà o rarefazione nell’evacuazione", "Un accumulo di liquido nei tessuti"],
+                correct: "Una difficoltà o rarefazione nell’evacuazione",
+                explanation: "La stipsi (o stitichezza) è una difficoltà o rarefazione nell’evacuazione delle feci, spesso causata da dieta povera di fibre, sedentarietà o farmaci. Non è una perdita di urina né un edema. Gli OSS devono promuovere una dieta ricca di fibre, incoraggiare la mobilità e segnalare la stipsi persistente."
+            },
+            {
+                question: "Cos’è la diarrea?",
+                options: ["Una difficoltà nell’evacuazione", "Un aumento della frequenza e fluidità delle feci", "Un accumulo di liquido nei tessuti"],
+                correct: "Un aumento della frequenza e fluidità delle feci",
+                explanation: "La diarrea è un aumento della frequenza e della fluidità delle feci, spesso causata da infezioni, intolleranze o farmaci. Non è una difficoltà nell’evacuazione (stipsi) né un edema. Gli OSS devono monitorare la diarrea, garantire idratazione e fornire assistenza igienica, segnalando episodi prolungati."
+            },
+            {
+                question: "Quale è la complicanza principale della diarrea?",
+                options: ["Ipertensione", "Disidratazione", "Edema"],
+                correct: "Disidratazione",
+                explanation: "La disidratazione è la complicanza principale della diarrea, dovuta alla perdita di acqua ed elettroliti. Non è l’ipertensione né l’edema. Gli OSS devono somministrare liquidi sotto supervisione, monitorare i segni di disidratazione (es. secchezza delle mucose) e segnalarli."
+            },
+            {
+                question: "Cos’è un clistere?",
+                options: ["Un dispositivo per misurare la glicemia", "Una procedura per introdurre liquido nel retto", "Uno strumento per misurare la pressione"],
+                correct: "Una procedura per introdurre liquido nel retto",
+                explanation: "Un clistere è una procedura che introduce liquido nel retto per stimolare l’evacuazione o somministrare farmaci, usata in caso di stipsi o preparazione a esami. Non misura la glicemia né la pressione. Gli OSS devono eseguire i clisteri con tecnica corretta, garantendo il comfort del paziente e monitorando i risultati."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = document.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
